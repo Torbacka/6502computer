@@ -1,4 +1,4 @@
-#define SHIFT_DATA 2
+  #define SHIFT_DATA 2
 #define SHIFT_CLK 3
 #define SHIFT_LATCH 4
 #define EEPROM_D0 5
@@ -45,15 +45,16 @@ void writeEEPROM(int address, byte data) {
   for (int pin = EEPROM_D0; pin <= EEPROM_D7; pin += 1) {
     pinMode(pin, OUTPUT);
   }
-
+  delay(1);
+  digitalWrite(WRITE_EN, LOW);
+  delay(1);
   for (int pin = EEPROM_D0; pin <= EEPROM_D7; pin += 1) {
     digitalWrite(pin, data & 1);
     data = data >> 1;
   }
-  digitalWrite(WRITE_EN, LOW);
-  delayMicroseconds(1);
+
   digitalWrite(WRITE_EN, HIGH);
-  delay(10);
+  delay(50);
 }
 
 
@@ -61,6 +62,7 @@ void writeEEPROM(int address, byte data) {
    Read the contents of the EEPROM and print them to the serial monitor.
 */
 void printContents() {
+  delay(50);
   for (int base = 0; base <= 512; base += 16) {
     byte data[16];
     for (int offset = 0; offset <= 15; offset += 1) {
@@ -87,7 +89,6 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(WRITE_EN, HIGH);
   Serial.begin(57600);
-  delay(10);
 
   /* Erase entire EEPROM
     Serial.print("Erasing EEPROM");
@@ -133,14 +134,15 @@ void loop() {
   }
   message_timer++;
   if (message_timer > 2000 && message_recived) {
+    delay(50);
     Serial.print("Programming EEPROM");
     for (int address = 0; address < message_pointer; address += 1) {
       writeEEPROM(address, message[address]);
-
       if (address % 64 == 0) {
         Serial.print(".");
       }
     }
+
     writeEEPROM(0xfffc, 0x00);
     writeEEPROM(0xfffd, 0x80);
     Serial.println(" done");

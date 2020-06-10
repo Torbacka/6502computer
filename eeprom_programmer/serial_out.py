@@ -40,6 +40,7 @@ def connect(device):
 
 
 def write_to_arduino(text):
+    print(text)
     for arduino in find_arduinos():
         try:
             arduino.write(text)
@@ -49,6 +50,6 @@ def write_to_arduino(text):
 
 
 if __name__ == "__main__":
-    with open("program.bin", "rb") as program:
+    with open("../assembler_programs/a.out", "rb") as program:
         write_to_arduino(program.read())
 
